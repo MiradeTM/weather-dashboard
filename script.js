@@ -4,7 +4,8 @@
 function currentWeather(){
   var city = $('#city-input').val().trim()
   queryURL = 'https://api.openweathermap.org/data/2.5/weather?q='+ city + '&units=imperial&appid=4269dfac7a15a389ebd794d9f326120d'
-$('#current-weather-here').empty()
+$('#current-weather-view').empty()
+$('#current-uv-display').empty()
   $.ajax({
     url: queryURL,
     method: 'get'
@@ -20,11 +21,9 @@ $('#current-weather-here').empty()
     var currentIcon = response.weather[0].icon
     var currentWind = response.wind.speed
 
-var currentWeatherView = $('<div>').attr('class', 'row')
-$('#current-weather-here').append(currentWeatherView)
 
-var currentWeatherCard = $('<div>').attr('class', 'card col-md-8')
-currentWeatherView.append(currentWeatherCard)
+var currentWeatherCard = $('<div>').attr('class', 'card')
+$('#current-weather-view').append(currentWeatherCard)
 var currentWeatherBody = $('<div>').attr({
   class: 'card-body',
   id: 'current-weather'
@@ -33,9 +32,11 @@ currentWeatherCard.append(currentWeatherBody)
 var iconEl = $('<p>').attr('class', 'icon')
 var iconImg = $('<img>').attr('src', 'https://openweathermap.org/img/wn/' + currentIcon + '.png')
 iconEl.append(iconImg)
-var currentTempEl = $('<p>').text(`It is currently: ${currentTemp} \n It feels like: ${feelsLike}`)
-var currentWindEl = $('<p>').text(`Wind Speed: ${currentWind} mph`)
-  currentWeatherBody.append(iconEl, currentTemp, currentWind) 
+var currentTempEl = $('<p>')
+currentTempEl.text(`It is currently: ${currentTemp} \n It feels like: ${feelsLike}`)
+var currentWindEl = $('<p>')
+currentWindEl.text(`Wind Speed: ${currentWind} mph`)
+  currentWeatherBody.append(iconEl, currentTempEl, currentWindEl) 
   var lon= response.coord.lon
     var lat=response.coord.lat
     function uvIndex(){
@@ -46,48 +47,82 @@ var currentWindEl = $('<p>').text(`Wind Speed: ${currentWind} mph`)
        method:'get'
      }).then(function(uv){
        console.log(uv)
+       var uvVal = uv[0].value
        var UVcard = $("<div>").attr({
-         class: 'card border-dark mb3 col-md-4',
+         class: 'card border-dark',
          id:'uv-card'
         })
       var UVhead = $('<div>').attr('class', 'card-header').text('Current UV Index')
       var UVbody = $('<div>').attr('class', 'card-body')
       var UVstatus=$('<h5>').attr({
-        class: 'card-title',
-        id: 'uv-warning'
+        'class': 'card-title',
+        'id': 'uv-warning'
       })
-      if(uv[0].value >= 8){
+      var uvValEl = $('<p>').attr('class', 'card-text uv-val').text(uvVal)
+      UVbody.append(uvValEl, UVstatus)
+      UVcard.append(UVhead, UVbody)
+      $('#current-uv-display').append(UVcard)
+      if(uvVal >= 8){
         $('#uv-warning').text('EXTREMELY HIGH')
-        $('#uv-card').attr('style', 'background:red')
-      }else if (uv[0].value <=5){
+        $('#uv-card').attr('id', 'extreme')
+      }else if (uvVal <=5){
         $('#uv-warning').text('MODERATE')
-        $('#uv-card').attr('style', 'background:yellow')
+        $('#uv-card').attr('id', 'moderate')
       }else{
         $('#uv-warning').text('HIGH')
-        $('#uv-card').attr('style', 'background:orange')
+        $('#uv-card').attr('id', 'high')
       }
-      var uvVal = $('<p>').attr('class', 'card-text').text(`Current UV Index: ${uv[0].value}`)
-      UVbody.append(UVstatus, uvVal)
-      UVcard.append(UVhead, UVbody)
-      $('#current-weather-view').append(UVcard)
-     })
+  
+    })
 
  
-  }
+    }
   uvIndex()
  }) 
   
 }
 
+
+var cities=[]
+
+function renderButtons() {
+
+
+  $("#buttons-view").empty();
+    
+  // Looping through the array of movies
+  for (var c = 0; c < cities.length; c++) {
+
+    
+    var a = $("<button>");
+   
+    a.addClass("city-btn");
+  
+    a.attr("data-name", cities[c]);
+    
+    a.text(cities[c]);
+   
+    $("#buttons-view").append(a); 
+  } 
+ 
+  }
+
 $('#add-city').on('click', function(){
   event.preventDefault();
     currentWeather()
-  
+ 
  var city = $('#city-input').val().trim()
+ 
+ 
+
+  
+ cities.push(city)
+localStorage.setItem('cityName', JSON.stringify(cities))
+ 
  
     var queryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=4269dfac7a15a389ebd794d9f326120d`;
   $('#weather-view').empty()
-    localStorage.setItem('city', city)
+   
     $.ajax({
       url: queryURL,
       method: "GET"
@@ -121,30 +156,15 @@ $('#add-city').on('click', function(){
      
     //  dayOfTheWeek()
 
-    } 
-  })
+  }
+
+   }) 
+  
+  
+  renderButtons()
  })
 
 
  
  
-//  function renderButtons() {
-
-
-//   $("#buttons-view").empty();
-
-//   // Looping through the array of movies
-//   for (var i = 0; i < cities.length; i++) {
-
-    
-//     var a = $("<button>");
-   
-//     a.addClass("city-btn");
-  
-//     a.attr("data-name", cities[i]);
-    
-//     a.text(cities[i]);
-   
-//     $("#buttons-view").append(a);
-//   }
-// }
+ 

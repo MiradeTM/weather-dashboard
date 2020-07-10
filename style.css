@@ -1,0 +1,18 @@
+button,
+div,
+form,
+input {
+  margin: 10px;
+}
+h1{
+    text-align: center;
+}
+#moderate{
+    background: yellow;
+}
+#high{
+    background: orange;
+}
+#extreme{
+    background:red;
+}
