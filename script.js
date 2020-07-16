@@ -20,6 +20,7 @@ $('#current-uv-display').empty()
     var weatherNow = response.weather[0].description
     var currentIcon = response.weather[0].icon
     var currentWind = response.wind.speed
+    var currentHumidity = response.main.humidity
 
 
 var currentWeatherCard = $('<div>').attr('class', 'card')
@@ -36,11 +37,12 @@ var currentTempEl = $('<p>')
 currentTempEl.text(`It is currently: ${currentTemp} \n It feels like: ${feelsLike}`)
 var currentWindEl = $('<p>')
 currentWindEl.text(`Wind Speed: ${currentWind} mph`)
-  currentWeatherBody.append(iconEl, currentTempEl, currentWindEl) 
+var currentHumidityEl = $('<p>').text(`Humidity: ${currentHumidity}%`)
+  currentWeatherBody.append(iconEl, currentTempEl, currentWindEl, currentHumidityEl) 
   var lon= response.coord.lon
     var lat=response.coord.lat
     function uvIndex(){
-    var queryUrlUV= 'http://api.openweathermap.org/data/2.5/uvi/forecast?appid=4269dfac7a15a389ebd794d9f326120d&lat='+ lat + '&lon=' + lon + '&cnt=1&units=imperial'
+    var queryUrlUV= 'http://api.openweathermap.org/data/2.5/uvi/forecast?appid=4269dfac7a15a389ebd794d9f326120d&lat='+ lat + '&lon=' + lon + '&cnt=1'
 
      $.ajax({
        url:queryUrlUV,
@@ -98,7 +100,7 @@ function renderButtons() {
    
     a.addClass("city-btn");
   
-    a.attr("data-name", cities[c]);
+    a.attr("data-name", localStorage.getItem('city[c]'));
     
     a.text(cities[c]);
    
@@ -127,13 +129,14 @@ localStorage.setItem('cityName', JSON.stringify(cities))
       url: queryURL,
       method: "GET"
     }).then(function(response) {
-        // console.log(response)  
+        console.log(response)  
         for(i=0; i<40;i+=8){
     var city = response.city.name
     var highTemp = response.list[i].main.temp_max
     var weatherIcon = response.list[i].weather[0].icon 
     var weather = response.list[i].weather[0].description
     var wind = response.list[i].wind.speed
+    var humidity = response.list[i].main.humidity
     var date = moment(response.list[i].dt_txt).format("ddd")
 
     // console.log(date)
@@ -149,7 +152,7 @@ localStorage.setItem('cityName', JSON.stringify(cities))
      var cardText = $('<p>').attr('class', 'card-text')
      var icon = $('<img>').attr('src', 'https://openweathermap.org/img/wn/' + weatherIcon + '.png')
       cardTitle.append(icon)
-     cardText.html(weather + '<br></br>' + 'High Temp: ' + highTemp + 'F ' + '<br></br>' + 'Wind: ' + wind + ' mph')
+     cardText.html(weather + '<br></br>' + 'High Temp: ' + highTemp + 'F ' + '<br></br>' + 'Wind: ' + wind + ' mph' + '<br></br>' + 'Humidity: ' + humidity + '%')
      weatherCard.append(cardHead, cardBody)
      cardBody.append(cardTitle, cardText)
      cardHead.text(date) 
