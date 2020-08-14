@@ -42,7 +42,7 @@ var currentHumidityEl = $('<p>').text(`Humidity: ${currentHumidity}%`)
   var lon= response.coord.lon
     var lat=response.coord.lat
     function uvIndex(){
-    var queryUrlUV= 'http://api.openweathermap.org/data/2.5/uvi/forecast?appid=4269dfac7a15a389ebd794d9f326120d&lat='+ lat + '&lon=' + lon + '&cnt=1'
+    var queryUrlUV= 'https://api.openweathermap.org/data/2.5/uvi/forecast?appid=4269dfac7a15a389ebd794d9f326120d&lat='+ lat + '&lon=' + lon + '&cnt=1'
 
      $.ajax({
        url:queryUrlUV,
@@ -90,7 +90,7 @@ var cities=[]
 function renderButtons() {
 
 
-  $("#buttons-view").empty();
+  
     
   // Looping through the array of movies
   for (var c = 0; c < cities.length; c++) {
@@ -100,7 +100,7 @@ function renderButtons() {
    
     a.addClass("city-btn");
   
-    a.attr("data-name", localStorage.getItem('city[c]'));
+    a.attr("data-name", cities[c]);
     
     a.text(cities[c]);
    
